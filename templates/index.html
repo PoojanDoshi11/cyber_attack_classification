@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Attack Detection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+
+    <!-- Form Container (Now Scrollable) -->
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <h2 class="text-2xl font-bold text-center text-gray-800">Network Attack Detection</h2>
+        <form action="/predict" method="post" class="mt-6 space-y-4">
+            {% for feature in feature_names %}
+                <div>
+                    <label for="{{ feature }}" class="block font-medium text-gray-700">
+                        {{ feature.replace('_', ' ').title() }}:
+                    </label>
+                    <input type="text" name="{{ feature }}" required 
+                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            {% endfor %}
+            <input type="submit" value="Predict Attack Type"
+                class="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition duration-200">
+        </form>
+    </div>
+
+    <!-- Overlay for Pop-up -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md hidden"></div>
+
+    <!-- Pop-up Box -->
+    <div id="popup" class="hidden fixed inset-0 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm w-full">
+            <p id="popup-text" class="text-lg font-semibold text-gray-800"></p>
+            <button onclick="hidePopup()" 
+                class="mt-4 px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-200">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript for Pop-up -->
+    <script>
+        function showPopup(prediction) {
+            if (prediction) {
+                document.getElementById("overlay").classList.remove("hidden");
+                document.getElementById("popup").classList.remove("hidden");
+                document.getElementById("popup-text").innerText = "Predicted Attack Type: " + prediction;
+            }
+        }
+
+        function hidePopup() {
+            document.getElementById("overlay").classList.add("hidden");
+            document.getElementById("popup").classList.add("hidden");
+        }
+
+        // Call popup when page loads with a prediction
+        document.addEventListener("DOMContentLoaded", function() {
+            let prediction = "{{ prediction }}";
+            if (prediction && prediction !== "None") {
+                showPopup(prediction);
+            }
+        });
+    </script>
+
+</body>
+</html>
